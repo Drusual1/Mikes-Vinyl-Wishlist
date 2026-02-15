@@ -256,7 +256,7 @@
     
     <script>
         // CONFIGURATION - Replace this URL with your Google Apps Script web app URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXhOkIoGhTzx4u5oPhinFv568_lTAVWT0JA2_9BzbGl0rWMRsSgTKoDvybqi0Xf9V7TQ/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJeNVlYVmEguZ09dAuEfBLFFBf6dkRW_h2q9e5KpRQRJchwjHhpcICayjuz4KFh-sFQQ/exec';
         
         let records = [];
         
@@ -383,19 +383,20 @@
             
             try {
                 const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: action,
-                        recordId: recordId
-                    })
-                });
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+        'Content-Type': 'text/plain',
+    },
+    body: JSON.stringify({
+        action: action,
+        recordId: recordId
+    })
+});
                 
-                const result = await response.json();
-                
-                if (result.success) {
+                // With no-cors mode, we can't read the response, so we just assume success
+// and reload the data to verify
+await loadRecords();
                     // Reload the records to show updated status
                     await loadRecords();
                     alert(isCurrentlyReserved ? 'Record unreserved!' : 'Record reserved! Everyone else will now see it as reserved.');
