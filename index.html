@@ -334,6 +334,10 @@
                             <div class="retailer-name">🔍 Search on JB Hi-Fi</div>
                             <div class="retailer-details">Australian retailer - in-store pickup available</div>
                         </a>
+                        <a href="https://discrepancyrecords.com.au/search?q=${searchQuery}" target="_blank" class="retailer-link search-button">
+                            <div class="retailer-name">🔍 Search on Discrepancy Records</div>
+                            <div class="retailer-details">Independent Australian record store</div>
+                        </a>
                         <a href="https://www.amazon.com.au/s?k=${searchQuery}+vinyl" target="_blank" class="retailer-link search-button">
                             <div class="retailer-name">🔍 Search on Amazon AU</div>
                             <div class="retailer-details">Fast shipping with Prime</div>
@@ -382,9 +386,17 @@
             }
             
             try {
-                // Use GET request with parameters instead of POST to avoid CORS
-                const url = `${SCRIPT_URL}?action=${action}&recordId=${recordId}`;
-                const response = await fetch(url);
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: action,
+                        recordId: recordId
+                    })
+                });
+                
                 const result = await response.json();
                 
                 if (result.success) {
