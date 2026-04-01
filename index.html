@@ -376,41 +376,33 @@
         }
         
         async function toggleReserve(recordId, isCurrentlyReserved) {
-            const action = isCurrentlyReserved ? 'unreserve' : 'reserve';
-            const confirmMessage = isCurrentlyReserved 
-                ? 'Are you sure you want to unreserve this record?' 
-                : 'Are you sure you want to reserve this record? This will mark it as "Reserved" for everyone else.';
-            
-            if (!confirm(confirmMessage)) {
-                return;
-            }
-            
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: action,
-                        recordId: recordId
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Reload the records to show updated status
-                    await loadRecords();
-                    alert(isCurrentlyReserved ? 'Record unreserved!' : 'Record reserved! Everyone else will now see it as reserved.');
-                } else {
-                    alert('Failed to update record. Please try again.');
-                }
-            } catch (error) {
-                alert('Error updating record. Please check your connection and try again.');
-                console.error('Error:', error);
-            }
+    const action = isCurrentlyReserved ? 'unreserve' : 'reserve';
+    const confirmMessage = isCurrentlyReserved 
+        ? 'Are you sure you want to unreserve this record?' 
+        : 'Are you sure you want to reserve this record? This will mark it as "Reserved" for everyone else.';
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    try {
+        // Use GET request with parameters instead of POST to avoid CORS
+        const url = `${SCRIPT_URL}?action=${action}&recordId=${recordId}`;
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        if (result.success) {
+            // Reload the records to show updated status
+            await loadRecords();
+            alert(isCurrentlyReserved ? 'Record unreserved!' : 'Record reserved! Everyone else will now see it as reserved.');
+        } else {
+            alert('Failed to update record. Please try again.');
         }
+    } catch (error) {
+        alert('Error updating record. Please check your connection and try again.');
+        console.error('Error:', error);
+    }
+}
         
         // Load records when page loads
         loadRecords();
